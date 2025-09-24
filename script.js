@@ -168,3 +168,47 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+
+// Fullscreen button
+if (fsBtn) {
+  fsBtn.addEventListener('click', () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    if (isIOS && typeof video.webkitEnterFullscreen === 'function') {
+      // На iPhone/iPad открываем нативный fullscreen
+      video.webkitEnterFullscreen();
+      return;
+    }
+
+    if (!document.fullscreenElement) {
+      if (video.requestFullscreen) video.requestFullscreen();
+      else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
+      else if (video.msRequestFullscreen) video.msRequestFullscreen();
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      else if (document.msExitFullscreen) document.msExitFullscreen();
+    }
+  });
+}
+
+// Когда входим / выходим из fullscreen
+document.addEventListener('fullscreenchange', () => {
+  if (document.fullscreenElement) {
+    video.controls = true;
+    if (controlsRow) controlsRow.style.display = 'none';
+  } else {
+    video.controls = false;
+    if (controlsRow) controlsRow.style.display = 'flex';
+  }
+});
+
+// Для iOS Safari
+video.addEventListener('webkitbeginfullscreen', () => {
+  video.controls = true;
+  if (controlsRow) controlsRow.style.display = 'none';
+});
+video.addEventListener('webkitendfullscreen', () => {
+  video.controls = false;
+  if (controlsRow) controlsRow.style.display = 'flex';
+});
