@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
     fsBtn.addEventListener('click', () => {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
       if (isIOS && typeof video.webkitEnterFullscreen === 'function') {
-        // iOS Safari fullscreen
         video.webkitEnterFullscreen();
         return;
       }
@@ -69,18 +68,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Fullscreen events (ПК, Android)
+  // Fullscreen events (Android/PC)
   document.addEventListener('fullscreenchange', () => {
     if (document.fullscreenElement) {
-      video.controls = true; // включаем нативный плеер
+      video.controls = true;
       if (controlsRow) controlsRow.style.display = 'none';
     } else {
-      video.controls = false; // возвращаем кастомный
+      video.controls = false;
       if (controlsRow) controlsRow.style.display = 'flex';
     }
   });
 
-  // iOS fullscreen events
+  // iOS Safari events
   video.addEventListener('webkitbeginfullscreen', () => {
     video.controls = true;
     if (controlsRow) controlsRow.style.display = 'none';
@@ -128,47 +127,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
+// --- Карусель ---
+document.addEventListener('DOMContentLoaded', () => {
+  const slides = document.querySelectorAll('.carousel-wrap .slide');
+  const prevBtn = document.querySelector('.carousel-wrap .arrow.left');
+  const nextBtn = document.querySelector('.carousel-wrap .arrow.right');
+  let index = 0;
 
-if (fsBtn) {
-  fsBtn.addEventListener('click', () => {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
-    if (isIOS && typeof video.webkitEnterFullscreen === 'function') {
-      // На iPhone / iPad открываем нативный плеер Apple
-      video.webkitEnterFullscreen();
-      return;
-    }
-
-    // Android / ПК
-    if (!document.fullscreenElement) {
-      if (video.requestFullscreen) video.requestFullscreen();
-      else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
-      else if (video.msRequestFullscreen) video.msRequestFullscreen();
-    } else {
-      if (document.exitFullscreen) document.exitFullscreen();
-      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-      else if (document.msExitFullscreen) document.msExitFullscreen();
-    }
-  });
-}
-
-// ПК + Android
-document.addEventListener('fullscreenchange', () => {
-  if (document.fullscreenElement) {
-    video.controls = true; // в fullscreen – нативный плеер
-    if (controlsRow) controlsRow.style.display = 'none';
-  } else {
-    video.controls = false; // в обычном режиме – кастомный
-    if (controlsRow) controlsRow.style.display = 'flex';
+  function showSlide(i) {
+    slides.forEach((slide, n) => {
+      slide.classList.toggle('active', n === i);
+    });
   }
-});
 
-// iOS Safari
-video.addEventListener('webkitbeginfullscreen', () => {
-  video.controls = true;
-  if (controlsRow) controlsRow.style.display = 'none';
-});
-video.addEventListener('webkitendfullscreen', () => {
-  video.controls = false;
-  if (controlsRow) controlsRow.style.display = 'flex';
+  function nextSlide() {
+    index = (index + 1) % slides.length;
+    showSlide(index);
+  }
+
+  function prevSlide() {
+    index = (index - 1 + slides.length) % slides.length;
+    showSlide(index);
+  }
+
+  if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+  if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+
+  // Автоматическая прокрутка
+  setInterval(nextSlide, 4000);
+
+  // Показать первый слайд
+  if (slides.length) showSlide(0);
 });
