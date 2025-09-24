@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fsBtn.addEventListener('click', () => {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
       if (isIOS && typeof video.webkitEnterFullscreen === 'function') {
-        // На iOS Safari используем встроенный fullscreen
+        // iOS Safari fullscreen
         video.webkitEnterFullscreen();
         return;
       }
@@ -69,18 +69,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Когда входим / выходим из fullscreen (Android/PC)
+  // Fullscreen events (ПК, Android)
   document.addEventListener('fullscreenchange', () => {
     if (document.fullscreenElement) {
-      video.controls = true;
+      video.controls = true; // включаем нативный плеер
       if (controlsRow) controlsRow.style.display = 'none';
     } else {
-      video.controls = false;
+      video.controls = false; // возвращаем кастомный
       if (controlsRow) controlsRow.style.display = 'flex';
     }
   });
 
-  // Для iOS Safari события
+  // iOS fullscreen events
   video.addEventListener('webkitbeginfullscreen', () => {
     video.controls = true;
     if (controlsRow) controlsRow.style.display = 'none';
@@ -127,3 +127,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+
